@@ -1,72 +1,21 @@
 /* =========================================================
-   Yerel yazı tipleri — dış servise bağımlılık yok.
+   Yerel yazı tipi: yalnızca JetBrains Mono.
 
-   Clash Display & Satoshi: Indian Type Foundry (Fontshare),
-     ITF Free Font License v2.0 — dosyalar Fontshare'in dağıttığı
-     woff2 biçiminin birebir kopyasıdır (subsetting/dönüşüm yapılmadı).
+   Clash Display & Satoshi burada YOK — bu repo public ve ITF Free Font
+   License v2.0, bu iki fontun public GitHub reposu üzerinden dağıtımını
+   yasaklıyor. index.html onları Fontshare CDN'inden yüklüyor (lisansın
+   açıkça izin verdiği yöntem).
+
+   Kendi bilgisayarından yerelden deploy edeceksen (Vercel CLI, Netlify
+   Drop — bu durumda dosyalar repodan değil diskinden gider, kısıt
+   uygulanmaz): assets/fonts/ altına clash-display-{400,500,600,700}.woff2
+   ve satoshi-{400,500,700}.woff2 dosyalarını koy, aşağıya onların
+   @font-face bloklarını ekle, index.html'deki Fontshare <link>'lerini kaldır.
+   Ayrıntı: LICENSE.md
+
    JetBrains Mono: SIL Open Font License 1.1 — bkz. OFL.txt
      Değişken font olduğu için 400 ve 500 tek dosyadan gelir.
-
-   Ayrıntı ve yayınlama uyarısı için: LICENSE.md
    ========================================================= */
-
-/* ---------- Clash Display (başlıklar) ---------- */
-@font-face {
-  font-family: 'Clash Display';
-  src: url('clash-display-400.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Clash Display';
-  src: url('clash-display-500.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Clash Display';
-  src: url('clash-display-600.woff2') format('woff2');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Clash Display';
-  src: url('clash-display-700.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* ---------- Satoshi (gövde) ---------- */
-@font-face {
-  font-family: 'Satoshi';
-  src: url('satoshi-400.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Satoshi';
-  src: url('satoshi-500.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Satoshi';
-  src: url('satoshi-700.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
 
 /* ---------- JetBrains Mono (etiket & kod) ---------- */
 @font-face {
