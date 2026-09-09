@@ -119,12 +119,13 @@ svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width:
 .skip-link:focus { top: 16px; }
 
 /* =========================================================
-   LOGO
+   LOGO — H monogram (kareden taşacak kadar büyük tek harf;
+   kirişin ortasındaki çentik imza detayı).
    ========================================================= */
 .logo-mark { display: block; width: 100%; height: 100%; }
-.logo-mark path { fill: none; stroke-width: 4.2; stroke-linecap: round; stroke-linejoin: round; }
-.logo-mark .lm-h { stroke: var(--ink); }
-.logo-mark .lm-k { stroke: var(--accent); }
+.logo-mark .lm-bg { fill: var(--ink); }
+.logo-mark .lm-glyph { fill: var(--paper); }
+.logo-mark .lm-notch { fill: var(--ink); }
 
 .brand-tile {
   display: grid; place-items: center;
@@ -147,15 +148,12 @@ svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width:
   background: var(--paper);
   animation: preOut 0.45s var(--ease) 0.8s forwards;
 }
-.pre-mark { width: 74px; height: 74px; }
-.pre-mark path {
-  fill: none; stroke-width: 4.2; stroke-linecap: round; stroke-linejoin: round;
-  stroke-dasharray: 120; stroke-dashoffset: 120;
-  animation: draw 0.7s var(--ease) forwards;
+.pre-mark {
+  width: 74px; height: 74px;
+  opacity: 0; transform: scale(0.8);
+  animation: markIn 0.5s var(--ease) 0.15s forwards;
 }
-.pre-mark .pre-h { stroke: var(--ink); }
-.pre-mark .pre-k { stroke: var(--accent); animation-delay: 0.18s; }
-@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes markIn { to { opacity: 1; transform: scale(1); } }
 @keyframes preOut { to { opacity: 0; visibility: hidden; } }
 
 /* ---------- Atmosphere ---------- */
@@ -407,10 +405,9 @@ body.cursor-active .cursor-ring {
 
 .hero-logo {
   position: absolute; top: -78px; right: -30px; z-index: 1;
-  width: 220px; height: 220px; opacity: 0.07;
+  width: 220px; height: 220px; opacity: 0.06;
   animation: float 11s ease-in-out infinite;
 }
-.hero-logo .logo-mark path { stroke-width: 3; }
 
 /* Kod kartı bilinçli olarak koyu: sayfadaki tek "gece" öğesi */
 .code-card {
