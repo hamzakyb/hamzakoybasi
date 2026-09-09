@@ -9,28 +9,36 @@ portfolyo-hamzakoybasi/
 ├── styles.css          # tasarım sistemi + tüm stiller
 ├── script.js           # dil, tema, filtre, modal, form, animasyonlar
 └── assets/
-    ├── logo.svg            # HK monogram (kare, açık zemin)
-    ├── logo-wordmark.svg   # monogram + isim kilidi (yatay kullanım)
+    ├── logo-icon.png       # H monogramı (256×256) — her yerde kullanılan ikon
+    ├── logo-icon-64.png    # favicon (64×64)
+    ├── logo-wordmark.png   # monogram + isim kilidi (yatay kullanım)
     ├── Hamza-Koybasi-CV.pdf
     └── projects/           # proje görselleri (opsiyonel)
 ```
 
 ## Logo
 
-Monogram, **H ve K'nin ortak bir gövdeyi paylaşması** üzerine kurulu:
-soldaki dikey çizgi + kiriş H'yi, ortadaki gövdeden çıkan iki kol K'yi tamamlıyor.
-Bu iki kol aynı zamanda bir **`<`** işareti oluşturuyor — yazılım göndermesi.
-H mürekkep siyahı (`--ink`), K'nin kolları kiremit turuncusu (`--accent`).
-Site içinde **inline SVG** olarak durduğu için renklerini CSS değişkenlerinden alıyor:
-`--accent` değerini değiştirdiğinde logo da onunla birlikte değişiyor.
+Tek harf **H** monogramı: koyu yuvarlak kare zemin üzerinde, kareden taşacak kadar
+büyük cream bir H. İki harf yerine bir harf olduğu için küçük boyutta (favicon,
+sekme ikonu) okunurluğunu koruyor; soyisim her zaman yanındaki yazıda duruyor.
 
-Kullanım yerleri: header, footer, favicon (data URI), hero'daki soluk filigran ve
-sayfa açılışındaki çizim animasyonu (preloader).
+Tasarım dosyaları `assets/` içinde, **site bunları yeniden çizmiyor, doğrudan
+kullanıyor**:
 
-- **Dış kullanım** (GitHub, LinkedIn, kartvizit): `assets/logo.svg`
-- **Yatay kilit** (imza, sunum kapağı): `assets/logo-wordmark.svg`
-- **Boyut sınırı:** monogramı 24 px'in altında kullanma; kolların açısı kaybolur.
-- **Renk:** tek renk gerekiyorsa tamamını beyaz ya da tamamını `#FF6B35` yap.
+| Dosya | Kullanım |
+|---|---|
+| `logo-icon.png` (256×256) | header, footer, hero filigranı, preloader, apple-touch-icon |
+| `logo-icon-64.png` (64×64) | favicon |
+| `logo-wordmark.png` (544×152) | yatay kilit — imza, sunum kapağı, e-posta altı |
+
+Orijinal seçki dosyaları da `assets/` içinde duruyor
+(`Logo - Hamza Köybaşı-selection1…4.png`). `selection2` ve `selection4` aynı
+tasarımın 256 ve 64 piksellik hâli; `selection3` farklı bir varyant, sitede
+kullanılmıyor.
+
+> Logoyu değiştirmen gerekirse `assets/logo-icon.png` dosyasını değiştirmen
+> yeterli — header, footer, filigran ve preloader hepsi aynı dosyayı kullanıyor.
+> Vektör (SVG) sürüm istersen söyle, her boyutta keskin kalması için üretebilirim.
 
 ## Tipografi
 
