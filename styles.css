@@ -886,17 +886,30 @@ body.cursor-active .cursor-ring {
 @media (max-width: 560px) {
   .shell { padding-inline: 20px; }
   .brand-text small { display: none; }
-  .projects-grid, .skills-grid, .services { grid-template-columns: minmax(0, 1fr); }
+  .projects-grid, .skills-grid, .services, .process { grid-template-columns: minmax(0, 1fr); }
   .hero-title { font-size: clamp(2.05rem, 8.8vw, 2.6rem); }
   .hero-lead { font-size: 15.5px; }
   .about-text .lead { font-size: 1.16rem; }
-  .pill { font-size: 10.5px; padding: 6px 12px 6px 10px; }
+
+  /* Pill: "müsait" ve saat metni tek satırda sıkışıp ayraç yanlış yere
+     düşüyordu. Ayracı gizleyip saati kendi satırına düşürüyoruz. */
+  .pill { font-size: 10.5px; padding: 8px 14px; flex-wrap: wrap; row-gap: 4px; }
+  .pill-sep { display: none; }
+  .pill-time { flex-basis: 100%; padding-left: 16px; }
+
   .hero-stats { gap: 26px; }
   .hero-stats dt { font-size: 1.85rem; }
   .hero-actions .btn { flex: 1 1 auto; }
   .hero-social { margin-left: 0; width: 100%; }
+
+  /* Metin linklerinin görünen boyutunu değiştirmeden dokunma alanını
+     büyütüyoruz (görünmez dolgu + eşit negatif kenar boşluğu). */
+  .project-links a, .link-btn { padding-block: 7px; margin-block: -7px; }
+  .to-top, .icon-btn { min-width: 42px; min-height: 42px; }
+
   .contact-list { grid-template-columns: minmax(0, 1fr); }
   .contact-form { padding: 22px; }
+  .field input, .field select, .field textarea { font-size: 16px; } /* iOS'ta otomatik yakınlaştırmayı önler */
   .modal { padding: 0; }
   .modal-panel { max-height: 100vh; height: 100%; border-radius: 0; width: 100%; }
   .modal-body { padding: 22px 20px 30px; }
