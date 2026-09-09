@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 48 48" role="img" aria-label="Hamza Köybaşı">
+  <title>Hamza Köybaşı — HK monogram</title>
+  <rect width="48" height="48" rx="13" fill="#FBF9F6" stroke="#17140F" stroke-opacity="0.12"/>
+  <g fill="none" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- H: sol gövde + paylaşılan gövde + kiriş -->
+    <path d="M11 12.5V35.5M24 12.5V35.5M11 24h13" stroke="#17140F"/>
+    <!-- K: paylaşılan gövdeden çıkan iki kol — birlikte "<" işaretini kurar -->
+    <path d="M24 24l12.5-11.5M24 24l12.5 11.5" stroke="#C63F14"/>
+  </g>
+</svg>

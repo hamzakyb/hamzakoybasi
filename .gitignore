@@ -1,0 +1,12 @@
+# Fontshare (ITF) yazı tipi dosyaları — bu repo PUBLIC.
+# Lisans (assets/fonts/LICENSE.md) bu dosyaların herkese açık bir
+# repository üzerinden dağıtılmasını yasaklıyor. JetBrains Mono (OFL)
+# bu kısıtla ilgili değil, o yüzden ignore edilmiyor.
+assets/fonts/clash-display-*.woff2
+assets/fonts/satoshi-*.woff2
+
+# Tipografi karşılaştırma/seçki sayfaları — sitenin parçası değil
+_tipografi-secenekleri.html
+_tipografi-ust-segment.html
+
+.DS_Store
