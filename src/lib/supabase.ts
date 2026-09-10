@@ -188,3 +188,39 @@ export async function uploadCvToSupabaseStorage(file: File): Promise<string | nu
     return null;
   }
 }
+
+/**
+ * Proje görselini Supabase Storage'a yükler ve public URL döner
+ */
+export async function uploadProjectImageToSupabase(file: File): Promise<string | null> {
+  const supabase = getSupabase();
+  if (!supabase) return null;
+
+  try {
+    const ext = file.name.split('.').pop() || 'png';
+    const cleanBase = file.name.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+    const fileName = `projects/proj-${Date.now()}-${cleanBase}.${ext}`;
+
+    const { data, error } = await supabase.storage
+      .from('portfolio-assets')
+      .upload(fileName, file, {
+        cacheControl: '86400',
+        upsert: true,
+        contentType: file.type || 'image/png'
+      });
+
+    if (error) {
+      console.error('Supabase image storage error:', error.message);
+      return null;
+    }
+
+    const { data: publicUrlData } = supabase.storage
+      .from('portfolio-assets')
+      .getPublicUrl(data.path);
+
+    return publicUrlData?.publicUrl || null;
+  } catch (err) {
+    console.error('Supabase project image upload exception:', err);
+    return null;
+  }
+}

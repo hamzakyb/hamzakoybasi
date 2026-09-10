@@ -101,10 +101,24 @@ export interface InboxMessage {
   read: boolean;
 }
 
+export interface SeoConfig {
+  siteTitle?: string;
+  metaDesc?: string;
+  keywords?: string[];
+  ogImage?: string;
+}
+
+export interface SecurityConfig {
+  adminPassword?: string;
+  passwordChangedAt?: string;
+}
+
 export interface PortfolioData {
   projects: Project[];
   services: ServiceItem[];
   skills: SkillCategory[];
   profile: Profile;
   inbox: InboxMessage[];
+  security?: SecurityConfig;
+  seo?: SeoConfig;
 }

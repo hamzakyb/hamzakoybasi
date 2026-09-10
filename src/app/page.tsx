@@ -35,6 +35,12 @@ export default function HomePage() {
     return () => window.removeEventListener('portfolio:dataChanged', handleDataChange);
   }, []);
 
+  useEffect(() => {
+    if (data.seo?.siteTitle) {
+      document.title = data.seo.siteTitle;
+    }
+  }, [data.seo]);
+
   const projects = data.projects.filter(p => p.status !== 'draft');
   const services = data.services;
   const skills = data.skills;
@@ -69,8 +75,8 @@ export default function HomePage() {
           message: formMessage
         })
       });
-      const resJson = await res.json();
-      if (resJson.success) {
+      const resData = await res.json();
+      if (resData.success) {
         portfolioStore.addMessage({
           name: formName,
           email: formEmail,
@@ -81,7 +87,7 @@ export default function HomePage() {
         setFormName('');
         setFormEmail('');
         setFormMessage('');
-        setTimeout(() => setFormSuccess(false), 6000);
+        setTimeout(() => setFormSuccess(false), 4000);
       }
     } catch {
       // Fallback to client store
@@ -92,7 +98,10 @@ export default function HomePage() {
         message: formMessage
       });
       setFormSuccess(true);
-      setTimeout(() => setFormSuccess(false), 6000);
+      setFormName('');
+      setFormEmail('');
+      setFormMessage('');
+      setTimeout(() => setFormSuccess(false), 4000);
     } finally {
       setFormSubmitting(false);
     }
@@ -444,22 +453,29 @@ export default function HomePage() {
                   data-id={proj.id}
                 >
                   <button
-                    className={`project-media ${proj.media || 'm1'}`}
+                    className={`project-media ${!proj.media?.startsWith('http') && !proj.media?.startsWith('data:') ? (proj.media || 'm1') : ''}`}
                     type="button"
                     onClick={() => setSelectedProject(proj)}
                     aria-label={`${d.title} detay`}
+                    style={
+                      proj.media && (proj.media.startsWith('http') || proj.media.startsWith('data:') || proj.media.startsWith('/'))
+                        ? { backgroundImage: `url(${proj.media})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                        : undefined
+                    }
                   >
-                    <span className="media-fallback">
-                      <span className="browser">
-                        <span className="browser-bar">
-                          <i></i><i></i><i></i>
-                          <small>{liveLink ? liveLink.replace(/^https?:\/\//, '').replace(/\/$/, '') : 'hamzakoybasi.com'}</small>
-                        </span>
-                        <span className="browser-body">
-                          <span className="mono-mark">{proj.mark || 'HK'}</span>
+                    {(!proj.media || (!proj.media.startsWith('http') && !proj.media.startsWith('data:') && !proj.media.startsWith('/'))) && (
+                      <span className="media-fallback">
+                        <span className="browser">
+                          <span className="browser-bar">
+                            <i></i><i></i><i></i>
+                            <small>{liveLink ? liveLink.replace(/^https?:\/\//, '').replace(/\/$/, '') : 'hamzakoybasi.com'}</small>
+                          </span>
+                          <span className="browser-body">
+                            <span className="mono-mark">{proj.mark || 'HK'}</span>
+                          </span>
                         </span>
                       </span>
-                    </span>
+                    )}
                     <span className="media-hover">
                       <span>{lang === 'en' ? 'View details' : 'Detayları gör'}</span>
                     </span>
@@ -677,6 +693,12 @@ export default function HomePage() {
             >
               <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
+
+            {selectedProject.media && (selectedProject.media.startsWith('http') || selectedProject.media.startsWith('data:') || selectedProject.media.startsWith('/')) && (
+              <div style={{ width: '100%', height: 210, borderRadius: 12, overflow: 'hidden', marginBottom: 20, border: '1px solid var(--line)' }}>
+                <img src={selectedProject.media} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              </div>
+            )}
 
             <span className="modal-kind">
               {(lang === 'en' && selectedProject.en?.kind) ? selectedProject.en.kind : selectedProject.tr.kind}

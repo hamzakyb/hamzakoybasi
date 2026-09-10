@@ -6,7 +6,7 @@ import './admin.css';
 import { portfolioStore } from '@/lib/store';
 import { Project, ServiceItem, SkillCategory, Profile, InboxMessage, PortfolioData } from '@/lib/types';
 import { INITIAL_DATA } from '@/lib/initialData';
-import { uploadCvToSupabaseStorage, isSupabaseConfigured, saveRemotePortfolioState } from '@/lib/supabase';
+import { uploadCvToSupabaseStorage, uploadProjectImageToSupabase, isSupabaseConfigured, saveRemotePortfolioState } from '@/lib/supabase';
 
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -21,6 +21,19 @@ export default function AdminPage() {
   // Modals state
   const [projectModalOpen, setProjectModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Partial<Project> | null>(null);
+  const [projectImageUploading, setProjectImageUploading] = useState(false);
+  const projImageInputRef = useRef<HTMLInputElement>(null);
+
+  // Parola Değiştirme State
+  const [currPassInput, setCurrPassInput] = useState('');
+  const [newPassInput, setNewPassInput] = useState('');
+  const [newPassConfirmInput, setNewPassConfirmInput] = useState('');
+  const [passChanging, setPassChanging] = useState(false);
+
+  // SEO State
+  const [seoTitleInput, setSeoTitleInput] = useState('');
+  const [seoDescInput, setSeoDescInput] = useState('');
+  const [seoKeywordsInput, setSeoKeywordsInput] = useState('');
 
   const [serviceModalOpen, setServiceModalOpen] = useState(false);
   const [newSrvTitle, setNewSrvTitle] = useState('');
@@ -68,6 +81,12 @@ export default function AdminPage() {
     setSupabaseConnected(configured);
     setSupabaseAnonKeyInput(portfolioStore.getAnonKey());
 
+    // SEO başlangıç değerleri
+    const seo = portfolioStore.getSeo();
+    setSeoTitleInput(seo.siteTitle || '');
+    setSeoDescInput(seo.metaDesc || '');
+    setSeoKeywordsInput((seo.keywords || []).join(', '));
+
     if (configured) {
       portfolioStore.syncFromSupabase().then(res => {
         if (res) showToast('Supabase veritabanı ile eşitlendi', 'success');
@@ -83,6 +102,79 @@ export default function AdminPage() {
     window.addEventListener('portfolio:dataChanged', refreshData);
     return () => window.removeEventListener('portfolio:dataChanged', refreshData);
   }, []);
+
+  // --- Parola Değiştirme Handler ---
+  const handleChangePassword = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!currPassInput.trim() || !newPassInput.trim()) {
+      showToast('Lütfen tüm alanları doldurun.', 'error');
+      return;
+    }
+    if (newPassInput !== newPassConfirmInput) {
+      showToast('Yeni şifreler birbiriyle uyuşmuyor!', 'error');
+      return;
+    }
+    setPassChanging(true);
+    const result = portfolioStore.changePassword(currPassInput, newPassInput);
+    setPassChanging(false);
+    if (result.success) {
+      showToast('Admin şifreniz başarıyla güncellendi ve Supabase bulutuna kaydedildi!', 'success');
+      setCurrPassInput('');
+      setNewPassInput('');
+      setNewPassConfirmInput('');
+    } else {
+      showToast(result.error || 'Şifre değiştirilemedi.', 'error');
+    }
+  };
+
+  // --- SEO Kaydetme Handler ---
+  const handleSaveSeo = (e: React.FormEvent) => {
+    e.preventDefault();
+    const kws = seoKeywordsInput.split(',').map(k => k.trim()).filter(Boolean);
+    portfolioStore.saveSeo({
+      siteTitle: seoTitleInput.trim(),
+      metaDesc: seoDescInput.trim(),
+      keywords: kws
+    });
+    showToast('SEO ve meta etiketleri başarıyla kaydedildi!', 'success');
+  };
+
+  // --- Proje Görseli Yükleme Handler ---
+  const handleProjectImageUpload = async (file: File) => {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      showToast('Lütfen geçerli bir görsel dosyası seçin (PNG, JPG, WebP)', 'error');
+      return;
+    }
+    setProjectImageUploading(true);
+
+    // Supabase Storage ile buluta yükle
+    if (portfolioStore.getSupabaseConfigured()) {
+      try {
+        const publicUrl = await uploadProjectImageToSupabase(file);
+        if (publicUrl && editingProject) {
+          setEditingProject({ ...editingProject, media: publicUrl });
+          showToast('Görsel Supabase Storage bulutuna yüklendi!', 'success');
+          setProjectImageUploading(false);
+          return;
+        }
+      } catch (err) {
+        console.warn('Supabase image upload warning:', err);
+      }
+    }
+
+    // Yerel önizleme (Base64)
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const base64 = ev.target?.result as string;
+      if (editingProject) {
+        setEditingProject({ ...editingProject, media: base64 });
+      }
+      showToast('Görsel projeye eklendi', 'success');
+      setProjectImageUploading(false);
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -1023,6 +1115,120 @@ export default function AdminPage() {
                   </div>
                 </div>
               </div>
+
+              {/* GÜVENLİK & ŞİFRE DEĞİŞTİRME */}
+              <div className="card-panel" style={{ marginTop: 24 }}>
+                <div className="card-panel-head">
+                  <div>
+                    <h3>Güvenlik &amp; Admin Şifresi Değiştir</h3>
+                    <p style={{ fontSize: 12.5, color: 'var(--muted)', margin: 0 }}>
+                      Yeni şifreniz Supabase bulut veritabanında saklanır ve tüm cihazlarınızda anında geçerli olur.
+                    </p>
+                  </div>
+                </div>
+                <div className="card-panel-body">
+                  <form onSubmit={handleChangePassword}>
+                    <div className="form-grid">
+                      <div className="form-group">
+                        <label className="form-label">Mevcut Şifre *</label>
+                        <input
+                          className="input-text"
+                          type="password"
+                          required
+                          placeholder="Mevcut şifreniz"
+                          value={currPassInput}
+                          onChange={e => setCurrPassInput(e.target.value)}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label">Yeni Şifre *</label>
+                        <input
+                          className="input-text"
+                          type="password"
+                          required
+                          placeholder="En az 4 karakter"
+                          value={newPassInput}
+                          onChange={e => setNewPassInput(e.target.value)}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label">Yeni Şifre (Tekrar) *</label>
+                        <input
+                          className="input-text"
+                          type="password"
+                          required
+                          placeholder="Yeni şifrenizi doğrulayın"
+                          value={newPassConfirmInput}
+                          onChange={e => setNewPassConfirmInput(e.target.value)}
+                        />
+                      </div>
+                      <div className="form-group" style={{ justifyContent: 'flex-end' }}>
+                        <button
+                          className="btn btn-primary"
+                          type="submit"
+                          disabled={passChanging}
+                          style={{ height: 42 }}
+                        >
+                          <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                          <span>{passChanging ? 'Kaydediliyor...' : 'Şifreyi Güncelle'}</span>
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+              {/* SEO & META AYARLARI */}
+              <div className="card-panel" style={{ marginTop: 24 }}>
+                <div className="card-panel-head">
+                  <div>
+                    <h3>Arama Motoru (SEO) &amp; Paylaşım Ayarları</h3>
+                    <p style={{ fontSize: 12.5, color: 'var(--muted)', margin: 0 }}>
+                      Google arama sonuçlarında ve sosyal medya paylaşımlarında görünecek başlık ve açıklamaları yönetin.
+                    </p>
+                  </div>
+                </div>
+                <div className="card-panel-body">
+                  <form onSubmit={handleSaveSeo}>
+                    <div className="form-grid">
+                      <div className="form-group col-full">
+                        <label className="form-label">Site Başlığı (Title Etiketi)</label>
+                        <input
+                          className="input-text"
+                          placeholder="Hamza Köybaşı — Senior Frontend & Fullstack Mühendisi"
+                          value={seoTitleInput}
+                          onChange={e => setSeoTitleInput(e.target.value)}
+                        />
+                      </div>
+                      <div className="form-group col-full">
+                        <label className="form-label">Meta Açıklaması (Description)</label>
+                        <textarea
+                          className="textarea-input"
+                          rows={2}
+                          placeholder="Modern web mimarileri, Next.js ve yüksek performanslı dijital deneyimler tasarlayan yazılım mühendisi."
+                          value={seoDescInput}
+                          onChange={e => setSeoDescInput(e.target.value)}
+                        />
+                      </div>
+                      <div className="form-group col-full">
+                        <label className="form-label">Anahtar Kelimeler (Virgülle)</label>
+                        <input
+                          className="input-text"
+                          placeholder="Next.js, React, Fullstack, Frontend, UI/UX, Portfolio"
+                          value={seoKeywordsInput}
+                          onChange={e => setSeoKeywordsInput(e.target.value)}
+                        />
+                      </div>
+                      <div className="form-group col-full" style={{ alignItems: 'flex-start' }}>
+                        <button className="btn btn-secondary btn-sm" type="submit">
+                          <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                          <span>SEO Ayarlarını Kaydet</span>
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
             </section>
           )}
 
@@ -1315,6 +1521,72 @@ export default function AdminPage() {
                         });
                       }}
                     />
+                  </div>
+                  <div className="form-group col-full">
+                    <label className="form-label">
+                      <span>Proje Görseli / Ekran Görüntüsü</span>
+                      <small>Supabase Storage bulutuna doğrudan yüklenir</small>
+                    </label>
+                    <div style={{
+                      display: 'flex',
+                      gap: 14,
+                      alignItems: 'center',
+                      padding: 14,
+                      border: '1px dashed var(--line-2)',
+                      borderRadius: 'var(--radius-sm)',
+                      background: 'var(--panel-2)'
+                    }}>
+                      {editingProject.media && (editingProject.media.startsWith('http') || editingProject.media.startsWith('data:') || editingProject.media.startsWith('/')) ? (
+                        <div style={{ width: 64, height: 64, borderRadius: 8, overflow: 'hidden', border: '1px solid var(--line)', flexShrink: 0, position: 'relative' }}>
+                          <img src={editingProject.media} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        </div>
+                      ) : (
+                        <div style={{ width: 64, height: 64, borderRadius: 8, background: 'var(--paper-2)', border: '1px solid var(--line)', display: 'grid', placeItems: 'center', flexShrink: 0, color: 'var(--muted)' }}>
+                          <svg viewBox="0 0 24 24" style={{ width: 28, height: 28 }}><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                        </div>
+                      )}
+
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: 'flex', gap: 8, marginBottom: 6 }}>
+                          <input
+                            type="file"
+                            ref={projImageInputRef}
+                            style={{ display: 'none' }}
+                            accept="image/*"
+                            onChange={e => {
+                              const f = e.target.files?.[0];
+                              if (f) handleProjectImageUpload(f);
+                            }}
+                          />
+                          <button
+                            className="btn btn-secondary btn-sm"
+                            type="button"
+                            disabled={projectImageUploading}
+                            onClick={() => projImageInputRef.current?.click()}
+                          >
+                            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            <span>{projectImageUploading ? 'Yükleniyor...' : 'Görsel Yükle (PNG/JPG/WebP)'}</span>
+                          </button>
+                          {editingProject.media && (
+                            <button
+                              className="btn btn-ghost btn-sm"
+                              type="button"
+                              style={{ color: 'var(--danger)' }}
+                              onClick={() => setEditingProject({ ...editingProject, media: 'm1' })}
+                            >
+                              Kaldır
+                            </button>
+                          )}
+                        </div>
+                        <input
+                          className="input-text"
+                          style={{ fontSize: 12, padding: '6px 10px' }}
+                          placeholder="Veya görsel URL'si yapıştırın (https://...)"
+                          value={editingProject.media || ''}
+                          onChange={e => setEditingProject({ ...editingProject, media: e.target.value })}
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

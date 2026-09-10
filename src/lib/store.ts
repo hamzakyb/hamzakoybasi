@@ -1,6 +1,6 @@
 'use client';
 
-import { PortfolioData, Project, ServiceItem, SkillCategory, Profile, InboxMessage } from './types';
+import { PortfolioData, Project, ServiceItem, SkillCategory, Profile, InboxMessage, SeoConfig, SecurityConfig } from './types';
 import { INITIAL_DATA, DEFAULT_PROFILE } from './initialData';
 import { 
   getSupabase, 
@@ -346,14 +346,58 @@ export const portfolioStore = {
     }
   },
 
+  verifyPassword(pass: string): boolean {
+    const trimmed = pass.trim();
+    if (!trimmed) return false;
+    const data = this.getData();
+    if (data.security?.adminPassword) {
+      if (trimmed === data.security.adminPassword) return true;
+    }
+    // Varsayılan / kurtarma şifreleri
+    return trimmed === 'admin' || trimmed === 'hamza2026' || trimmed === 'hk';
+  },
+
   login(pass: string): boolean {
-    if (pass === 'admin' || pass === 'hamza2026' || pass === 'hk') {
+    if (this.verifyPassword(pass)) {
       try {
         localStorage.setItem(AUTH_KEY, 'true');
       } catch {}
       return true;
     }
     return false;
+  },
+
+  changePassword(currentPass: string, newPass: string): { success: boolean; error?: string } {
+    if (!this.verifyPassword(currentPass)) {
+      return { success: false, error: 'Mevcut şifreniz hatalı.' };
+    }
+    const cleanNew = newPass.trim();
+    if (cleanNew.length < 4) {
+      return { success: false, error: 'Yeni şifre en az 4 karakter olmalıdır.' };
+    }
+    const data = this.getData();
+    data.security = {
+      adminPassword: cleanNew,
+      passwordChangedAt: new Date().toISOString()
+    };
+    this.saveData(data);
+    try {
+      localStorage.setItem(AUTH_KEY, 'true');
+    } catch {}
+    return { success: true };
+  },
+
+  getSeo(): SeoConfig {
+    return this.getData().seo || {
+      siteTitle: 'Hamza Köybaşı — Senior Frontend & Fullstack Mühendisi',
+      metaDesc: 'Modern web mimarileri, Next.js ve yüksek performanslı dijital deneyimler tasarlayan yazılım mühendisi.'
+    };
+  },
+
+  saveSeo(seo: SeoConfig): void {
+    const data = this.getData();
+    data.seo = { ...(data.seo || {}), ...seo };
+    this.saveData(data);
   },
 
   logout(): void {
