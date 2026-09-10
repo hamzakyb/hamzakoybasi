@@ -25,6 +25,7 @@ export default function HomePage() {
   useEffect(() => {
     // Load persisted store data on client
     setData(portfolioStore.getData());
+    portfolioStore.syncFromSupabase();
 
     const handleDataChange = () => {
       setData(portfolioStore.getData());

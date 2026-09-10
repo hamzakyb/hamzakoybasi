@@ -19,6 +19,10 @@ build/
 tsconfig.tsbuildinfo
 next-env.d.ts
 
+# Environment
+.env*.local
+.env
+
 # Fontshare in public
 public/assets/fonts/clash-display-*.woff2
 public/assets/fonts/satoshi-*.woff2

@@ -19,6 +19,27 @@ export async function POST(req: NextRequest) {
       read: false
     };
 
+    // Supabase ortam değişkenleri mevcutsa veritabanına ekle
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://igytzanekayiyybvmqga.supabase.co';
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    if (supabaseUrl && supabaseKey && !supabaseKey.includes('your-supabase-anon-key')) {
+      try {
+        const { createClient } = await import('@supabase/supabase-js');
+        const supabase = createClient(supabaseUrl, supabaseKey);
+        await supabase.from('inbox_messages').insert({
+          name: newMessage.name,
+          email: newMessage.email,
+          topic: newMessage.topic,
+          message: newMessage.message,
+          date: newMessage.date,
+          read: false
+        });
+      } catch (dbErr) {
+        console.warn('Supabase contact save warning:', dbErr);
+      }
+    }
+
     return NextResponse.json({ success: true, message: newMessage });
   } catch (err: any) {
     return NextResponse.json({ error: err.message || 'Server error' }, { status: 500 });

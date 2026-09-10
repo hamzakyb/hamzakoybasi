@@ -6,6 +6,7 @@ import './admin.css';
 import { portfolioStore } from '@/lib/store';
 import { Project, ServiceItem, SkillCategory, Profile, InboxMessage, PortfolioData } from '@/lib/types';
 import { INITIAL_DATA } from '@/lib/initialData';
+import { uploadCvToSupabaseStorage, isSupabaseConfigured, saveRemotePortfolioState } from '@/lib/supabase';
 
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -34,6 +35,12 @@ export default function AdminPage() {
   const [jsonModalOpen, setJsonModalOpen] = useState(false);
   const [jsonText, setJsonText] = useState('');
 
+  // Supabase Modal & State
+  const [supabaseModalOpen, setSupabaseModalOpen] = useState(false);
+  const [supabaseAnonKeyInput, setSupabaseAnonKeyInput] = useState('');
+  const [supabaseConnected, setSupabaseConnected] = useState(false);
+  const [supabaseSyncing, setSupabaseSyncing] = useState(false);
+
   const [selectedMessage, setSelectedMessage] = useState<InboxMessage | null>(null);
   const [inboxFilter, setInboxFilter] = useState<'all' | 'unread'>('all');
 
@@ -57,8 +64,19 @@ export default function AdminPage() {
     setTheme(currentTheme);
     document.documentElement.setAttribute('data-theme', currentTheme);
 
+    const configured = portfolioStore.getSupabaseConfigured();
+    setSupabaseConnected(configured);
+    setSupabaseAnonKeyInput(portfolioStore.getAnonKey());
+
+    if (configured) {
+      portfolioStore.syncFromSupabase().then(res => {
+        if (res) showToast('Supabase veritabanı ile eşitlendi', 'success');
+      });
+    }
+
     const refreshData = () => {
       setData(portfolioStore.getData());
+      setSupabaseConnected(portfolioStore.getSupabaseConfigured());
     };
     refreshData();
 
@@ -103,6 +121,23 @@ export default function AdminPage() {
       return;
     }
 
+    // Supabase Storage desteği
+    if (portfolioStore.getSupabaseConfigured()) {
+      try {
+        const publicUrl = await uploadCvToSupabaseStorage(file);
+        if (publicUrl) {
+          const sizeKb = Math.round(file.size / 1024);
+          const sizeStr = sizeKb >= 1024 ? (sizeKb / 1024).toFixed(1) + ' MB' : sizeKb + ' KB';
+          portfolioStore.saveProfile({ cvPath: publicUrl });
+          portfolioStore.saveCv('', file.name, sizeStr);
+          showToast('Yeni CV hem yerel ortama hem de Supabase Storage bulutuna yüklendi!', 'success');
+          return;
+        }
+      } catch (err) {
+        console.warn('Supabase CV storage upload error:', err);
+      }
+    }
+
     try {
       // 1. Try server-side file save via API
       const formData = new FormData();
@@ -131,6 +166,44 @@ export default function AdminPage() {
       showToast('Yeni CV başarıyla yüklendi ve yayına alındı!', 'success');
     };
     reader.readAsDataURL(file);
+  };
+
+  // --- Supabase Actions ---
+  const handleSaveSupabaseKey = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const clean = supabaseAnonKeyInput.trim();
+    portfolioStore.setAnonKey(clean);
+    setSupabaseSyncing(true);
+    try {
+      const ok = await portfolioStore.syncFromSupabase();
+      setSupabaseConnected(portfolioStore.getSupabaseConfigured());
+      if (ok) {
+        showToast('Supabase başarıyla bağlandı ve veriler eşitlendi!', 'success');
+        setSupabaseModalOpen(false);
+      } else {
+        showToast('Supabase anahtarı kaydedildi. SQL şeması hazır olduğunda eşitleme başlayacaktır.', 'info');
+      }
+    } catch {
+      showToast('Bağlantı testi sırasında hata oluştu.', 'error');
+    } finally {
+      setSupabaseSyncing(false);
+    }
+  };
+
+  const handlePushToSupabase = async () => {
+    setSupabaseSyncing(true);
+    try {
+      const ok = await saveRemotePortfolioState(data);
+      if (ok) {
+        showToast('Tüm portfolyo içeriği Supabase veritabanına başarıyla gönderildi!', 'success');
+      } else {
+        showToast('Aktarım yapılamadı. Supabase SQL şemasının çalıştırıldığından emin olun.', 'error');
+      }
+    } catch (err) {
+      showToast('Hata: ' + (err as Error).message, 'error');
+    } finally {
+      setSupabaseSyncing(false);
+    }
   };
 
   // --- Services Actions ---
@@ -424,6 +497,16 @@ export default function AdminPage() {
           </div>
 
           <div className="topbar-right">
+            <button
+              className={`supabase-badge ${supabaseConnected ? 'connected' : 'unconfigured'}`}
+              onClick={() => setSupabaseModalOpen(true)}
+              type="button"
+              title="Supabase Veritabanı ve Senkronizasyon Ayarları"
+            >
+              <span className="supabase-dot" />
+              <span>{supabaseConnected ? 'Supabase Bağlı' : 'Supabase Bağla'}</span>
+            </button>
+
             <button className="btn-icon" onClick={toggleTheme} type="button" title="Temayı Değiştir">
               {theme === 'dark' ? (
                 <svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -1325,6 +1408,155 @@ export default function AdminPage() {
             <div className="modal-foot">
               <button className="btn btn-secondary" onClick={() => setJsonModalOpen(false)} type="button">Kapat</button>
               <button className="btn btn-primary" onClick={handleApplyJsonImport} type="button">İçe Aktar &amp; Uygula</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ============ MODAL: SUPABASE VERİTABANI & BULUT AYARLARI ============ */}
+      {supabaseModalOpen && (
+        <div className="modal-backdrop is-open" onClick={() => setSupabaseModalOpen(false)}>
+          <div className="modal-window" style={{ maxWidth: 660 }} onClick={e => e.stopPropagation()}>
+            <div className="modal-head">
+              <div>
+                <h3>Supabase Backend &amp; Senkronizasyon</h3>
+                <p style={{ fontSize: 13, color: 'var(--muted)', margin: 0, marginTop: 2 }}>
+                  Proje URL: <code>https://igytzanekayiyybvmqga.supabase.co</code>
+                </p>
+              </div>
+              <button className="btn-icon" onClick={() => setSupabaseModalOpen(false)} type="button">
+                <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+            <div className="modal-body">
+              {/* Durum Kartı */}
+              <div style={{
+                padding: '14px 18px',
+                borderRadius: 'var(--radius-sm)',
+                border: '1px solid var(--line)',
+                background: 'var(--panel-2)',
+                marginBottom: 20,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 12
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span className="supabase-dot" style={{ color: supabaseConnected ? '#27ae60' : '#d68910', width: 10, height: 10 }} />
+                  <div>
+                    <strong style={{ fontSize: 13.5, display: 'block' }}>
+                      {supabaseConnected ? 'Supabase Bağlantısı Aktif' : 'Anon Public Key Bekleniyor'}
+                    </strong>
+                    <span style={{ fontSize: 12, color: 'var(--muted)' }}>
+                      {supabaseConnected 
+                        ? 'Admin panelindeki tüm değişiklikler anında Supabase veritabanına yazılır.' 
+                        : 'Supabase Dashboard -> Settings -> API -> "anon public" anahtarınızı giriniz.'}
+                    </span>
+                  </div>
+                </div>
+                {supabaseConnected && (
+                  <button
+                    className="btn btn-secondary btn-sm"
+                    onClick={handlePushToSupabase}
+                    disabled={supabaseSyncing}
+                    type="button"
+                  >
+                    {supabaseSyncing ? 'Eşitleniyor...' : 'Buluta Gönder'}
+                  </button>
+                )}
+              </div>
+
+              {/* Form: Anon Key */}
+              <form onSubmit={handleSaveSupabaseKey}>
+                <div className="form-group" style={{ marginBottom: 18 }}>
+                  <label className="form-label" htmlFor="supabaseKey">
+                    <span>Supabase Anon Public API Key</span>
+                    <small>Project Settings ➔ API ➔ anon public</small>
+                  </label>
+                  <input
+                    id="supabaseKey"
+                    className="input-text"
+                    type="text"
+                    placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    value={supabaseAnonKeyInput}
+                    onChange={e => setSupabaseAnonKeyInput(e.target.value)}
+                    style={{ fontFamily: 'var(--font-mono)', fontSize: 12.5 }}
+                  />
+                </div>
+
+                <div style={{ display: 'flex', gap: 10, marginBottom: 22 }}>
+                  <button className="btn btn-primary btn-sm" type="submit" disabled={supabaseSyncing}>
+                    {supabaseSyncing ? 'Kaydediliyor & Test Ediliyor...' : 'Anahtarı Kaydet ve Bağlan'}
+                  </button>
+                  {supabaseAnonKeyInput && (
+                    <button
+                      className="btn btn-ghost btn-sm"
+                      type="button"
+                      onClick={() => {
+                        setSupabaseAnonKeyInput('');
+                        portfolioStore.setAnonKey('');
+                        setSupabaseConnected(false);
+                        showToast('Supabase anahtarı sıfırlandı', 'info');
+                      }}
+                    >
+                      Anahtarı Temizle
+                    </button>
+                  )}
+                </div>
+              </form>
+
+              {/* SQL Şeması Bilgilendirmesi */}
+              <div style={{ borderTop: '1px solid var(--line)', paddingTop: 16 }}>
+                <h4 style={{ fontSize: 14, marginBottom: 6 }}>Supabase SQL Tablo Kurulumu</h4>
+                <p style={{ fontSize: 12.5, color: 'var(--muted)', margin: 0, marginBottom: 10 }}>
+                  Veritabanı tablolarınız (portfolio_state, inbox_messages, storage) henüz açılmadıysa aşağıdaki SQL betiğini kopyalayıp Supabase SQL Editor&apos;de bir kere &quot;Run&quot; ediniz:
+                </p>
+                <div style={{ display: 'flex', gap: 10, marginBottom: 8 }}>
+                  <button
+                    className="btn btn-secondary btn-sm"
+                    onClick={() => {
+                      const sql = `-- HAMZA KÖYBAŞI PORTFOLYO - SUPABASE VERİTABANI ŞEMASI
+create table if not exists public.portfolio_state (
+  id text primary key default 'default_state',
+  data jsonb not null,
+  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+alter table public.portfolio_state enable row level security;
+create policy "Public portfolio read" on public.portfolio_state for select using (true);
+create policy "Admin portfolio upsert" on public.portfolio_state for all using (true) with check (true);
+
+create table if not exists public.inbox_messages (
+  id text primary key default ('msg-' || floor(extract(epoch from now()) * 1000)::text),
+  name text not null,
+  email text not null,
+  topic text default 'Genel',
+  message text not null,
+  date timestamp with time zone default timezone('utc'::text, now()) not null,
+  read boolean default false
+);
+alter table public.inbox_messages enable row level security;
+create policy "Public can submit contact messages" on public.inbox_messages for insert with check (true);
+create policy "Admin can manage messages" on public.inbox_messages for all using (true) with check (true);`;
+                      navigator.clipboard.writeText(sql);
+                      showToast('Supabase SQL betiği panoya kopyalandı!', 'success');
+                    }}
+                    type="button"
+                  >
+                    SQL Betiğini Kopyala
+                  </button>
+                  <a
+                    className="btn btn-ghost btn-sm"
+                    href="https://supabase.com/dashboard/project/igytzanekayiyybvmqga/sql"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    SQL Editor&apos;ü Aç ↗
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div className="modal-foot">
+              <button className="btn btn-secondary" onClick={() => setSupabaseModalOpen(false)} type="button">Kapat</button>
             </div>
           </div>
         </div>

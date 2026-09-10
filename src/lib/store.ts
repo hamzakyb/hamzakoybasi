@@ -2,12 +2,61 @@
 
 import { PortfolioData, Project, ServiceItem, SkillCategory, Profile, InboxMessage } from './types';
 import { INITIAL_DATA, DEFAULT_PROFILE } from './initialData';
+import { 
+  getSupabase, 
+  isSupabaseConfigured, 
+  fetchRemotePortfolioState, 
+  saveRemotePortfolioState, 
+  sendRemoteContactMessage,
+  getSupabaseAnonKey,
+  setSupabaseAnonKey
+} from './supabase';
 
 const STORAGE_KEY = 'hk_portfolio_data_next_v1';
 const AUTH_KEY = 'hk_admin_auth_v1';
 const THEME_KEY = 'hk_admin_theme_v1';
 
+let isSyncing = false;
+let hasSyncedInitial = false;
+
 export const portfolioStore = {
+  getSupabaseConfigured(): boolean {
+    return isSupabaseConfigured();
+  },
+
+  getAnonKey(): string {
+    return getSupabaseAnonKey();
+  },
+
+  setAnonKey(key: string): void {
+    setSupabaseAnonKey(key);
+    this.syncFromSupabase();
+  },
+
+  async syncFromSupabase(): Promise<boolean> {
+    if (!isSupabaseConfigured() || isSyncing) return false;
+    isSyncing = true;
+    try {
+      const remoteData = await fetchRemotePortfolioState();
+      if (remoteData && remoteData.projects) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(remoteData));
+        window.dispatchEvent(new CustomEvent('portfolio:dataChanged', { detail: remoteData }));
+        hasSyncedInitial = true;
+        return true;
+      } else if (!hasSyncedInitial) {
+        // Supabase tablosu henüz boşsa, yerel veriyi Supabase'e ilk kez tohumla (seed et)
+        const current = this.getData();
+        await saveRemotePortfolioState(current);
+        hasSyncedInitial = true;
+      }
+    } catch (e) {
+      console.warn('Supabase sync error:', e);
+    } finally {
+      isSyncing = false;
+    }
+    return false;
+  },
+
   getData(): PortfolioData {
     if (typeof window === 'undefined') return INITIAL_DATA;
     try {
@@ -33,6 +82,13 @@ export const portfolioStore = {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
       window.dispatchEvent(new CustomEvent('portfolio:dataChanged', { detail: data }));
+      
+      // Supabase'e arka planda asenkron kaydet
+      if (isSupabaseConfigured()) {
+        saveRemotePortfolioState(data).catch(err => {
+          console.warn('Supabase background save warning:', err);
+        });
+      }
     } catch (e) {
       console.error('Failed to save portfolio data to localStorage', e);
     }
@@ -256,6 +312,13 @@ export const portfolioStore = {
     if (!data.inbox) data.inbox = [];
     data.inbox.unshift(item);
     this.saveData(data);
+
+    if (isSupabaseConfigured()) {
+      sendRemoteContactMessage(msg).catch(err => {
+        console.warn('Failed to send message to Supabase inbox_messages:', err);
+      });
+    }
+
     return item;
   },
 

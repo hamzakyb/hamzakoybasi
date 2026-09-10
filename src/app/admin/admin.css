@@ -1371,3 +1371,55 @@ svg {
   align-items: center;
   gap: 8px;
 }
+
+/* =========================================================
+   SUPABASE CANLI BAĞLANTI & AYARLARI
+   ========================================================= */
+.supabase-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 600;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.supabase-badge:hover {
+  transform: translateY(-1px);
+  border-color: var(--accent);
+}
+.supabase-badge.connected {
+  border-color: rgba(39, 174, 96, 0.4);
+  background: rgba(39, 174, 96, 0.08);
+  color: #27ae60;
+}
+.supabase-badge.unconfigured {
+  border-color: rgba(243, 156, 18, 0.4);
+  background: rgba(243, 156, 18, 0.08);
+  color: #d68910;
+}
+.supabase-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 6px currentColor;
+}
+.code-box {
+  background: #141416;
+  color: #e2e8f0;
+  padding: 14px 16px;
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-x: auto;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: 8px;
+  max-height: 180px;
+}
