@@ -27,7 +27,6 @@
     'nav.contact': 'Contact',
     'nav.hire': "Let's work together",
 
-    'hero.pill': 'Available for new projects',
     'hero.title1': 'I turn ideas',
     'hero.title2': 'working',
     'hero.title3': 'into',
@@ -164,13 +163,11 @@
   var UI = {
     tr: {
       copyIdle: 'E-postayı kopyala', copyDone: 'Kopyalandı ✓',
-      time: function (t) { return "Nevşehir'de " + t; },
       formError: 'Lütfen zorunlu alanları doldurun.',
       formSent: 'E-posta uygulamanız açılıyor…'
     },
     en: {
       copyIdle: 'Copy e-mail', copyDone: 'Copied ✓',
-      time: function (t) { return t + ' in Nevşehir'; },
       formError: 'Please fill in the required fields.',
       formSent: 'Opening your e-mail app…'
     }
@@ -456,6 +453,16 @@
     }
   };
 
+  /* Synchronize PROJECTS with PortfolioStore (if loaded) */
+  if (window.PortfolioStore) {
+    var storedProjs = window.PortfolioStore.getProjects();
+    if (storedProjs && storedProjs.length) {
+      storedProjs.forEach(function (p) {
+        PROJECTS[p.id] = p;
+      });
+    }
+  }
+
   /* ---------------------------------------------------------
      3) Language
      --------------------------------------------------------- */
@@ -482,8 +489,9 @@
     var copyLabel = $('#copyMailLabel');
     if (copyLabel) copyLabel.textContent = UI[lang].copyIdle;
 
-    updateTime();
     if (openId) fillModal(openId);
+    if (typeof renderServicesDynamic === 'function') renderServicesDynamic();
+    if (typeof renderSkillsDynamic === 'function') renderSkillsDynamic();
     try { localStorage.setItem('hk-lang', lang); } catch (e) {}
   }
 
@@ -494,26 +502,7 @@
   if (langBtn) langBtn.addEventListener('click', function () { applyLang(lang === 'tr' ? 'en' : 'tr'); });
 
   /* ---------------------------------------------------------
-     5) Local time in Nevşehir
-     --------------------------------------------------------- */
-  var timeEl = $('#localTime');
-  function updateTime() {
-    if (!timeEl) return;
-    var t;
-    try {
-      t = new Intl.DateTimeFormat(lang === 'en' ? 'en-GB' : 'tr-TR', {
-        timeZone: 'Europe/Istanbul', hour: '2-digit', minute: '2-digit'
-      }).format(new Date());
-    } catch (e) {
-      t = new Date().toTimeString().slice(0, 5);
-    }
-    timeEl.textContent = UI[lang].time(t);
-  }
-  updateTime();
-  setInterval(updateTime, 30000);
-
-  /* ---------------------------------------------------------
-     6) Mobile menu
+     5) Mobile menu
      --------------------------------------------------------- */
   var menuBtn = $('#menuBtn');
   var mobileMenu = $('#mobileMenu');
@@ -538,7 +527,7 @@
   }
 
   /* ---------------------------------------------------------
-     7) Header state, scroll progress, active nav link
+     6) Header state, scroll progress, active nav link
      --------------------------------------------------------- */
   var header = $('#siteHeader');
   var progress = $('#scrollProgress');
@@ -573,7 +562,7 @@
   onScroll();
 
   /* ---------------------------------------------------------
-     8) Reveal on scroll + counters
+     7) Reveal on scroll + counters
      --------------------------------------------------------- */
   function runCounters(scope) {
     $$('[data-count]', scope).forEach(function (el) {
@@ -610,8 +599,159 @@
   }
 
   /* ---------------------------------------------------------
-     9) Project filters
+     8) Project filters & Dynamic Rendering
      --------------------------------------------------------- */
+  var gridEl = $('#projectsGrid');
+  if (gridEl && window.PortfolioStore) {
+    var projsList = window.PortfolioStore.getProjects();
+    if (projsList && projsList.length) {
+      gridEl.innerHTML = '';
+      projsList.forEach(function (p) {
+        if (p.status === 'draft') return;
+        var num = p.order < 10 ? '0' + p.order : String(p.order);
+        var art = document.createElement('article');
+        art.className = 'project reveal is-visible' + (p.featured ? ' featured' : '');
+        art.setAttribute('data-tags', (p.tags || []).join(' '));
+        art.setAttribute('data-id', p.id);
+
+        var dTr = p.tr || {};
+        var chipsHtml = (p.chips || []).map(function (c) { return '<li>' + c + '</li>'; }).join('');
+        var liveHref = (p.links && p.links[0] && p.links[0].href) || '';
+
+        art.innerHTML =
+          '<button class="project-media ' + (p.media || 'm1') + '" type="button" data-open="' + p.id + '" aria-label="' + dTr.title + ' — detay">' +
+            '<span class="media-fallback">' +
+              '<span class="browser">' +
+                '<span class="browser-bar"><i></i><i></i><i></i><small>' + (liveHref ? liveHref.replace(/^https?:\/\//, '').replace(/\/$/, '') : 'hamzakoybasi.com') + '</small></span>' +
+                '<span class="browser-body"><span class="mono-mark">' + (p.mark || 'HK') + '</span></span>' +
+              '</span>' +
+            '</span>' +
+            '<span class="media-hover"><span data-i18n="proj.detail">Detayları gör</span></span>' +
+          '</button>' +
+          '<div class="project-body">' +
+            '<div class="project-top">' +
+              '<span class="project-no">' + num + '</span>' +
+              (dTr.badge ? '<span class="badge badge-live"><i></i><span data-i18n="proj.live">' + dTr.badge + '</span></span>' : '') +
+            '</div>' +
+            '<h3>' + dTr.title + ' <span class="project-kind">— ' + dTr.kind + '</span></h3>' +
+            '<p>' + (dTr.lead || dTr.summary || '') + '</p>' +
+            '<ul class="chips sm">' + chipsHtml + '</ul>' +
+            '<div class="project-links">' +
+              '<button class="link-btn" type="button" data-open="' + p.id + '">' +
+                '<span data-i18n="proj.detail">Detayları gör</span>' +
+                '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7"/></svg>' +
+              '</button>' +
+              (liveHref ? '<a href="' + liveHref + '" target="_blank" rel="noopener"><span data-i18n="proj.visit">Canlı site</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>' : '') +
+            '</div>' +
+          '</div>';
+
+        gridEl.appendChild(art);
+      });
+    }
+  }
+
+  /* --- Synchronize CV Link --- */
+  function syncCvLink() {
+    var heroCv = $('#heroCvLink');
+    if (!heroCv || !window.PortfolioStore) return;
+    var prof = window.PortfolioStore.getProfile();
+    if (prof && prof.cvData) {
+      heroCv.href = prof.cvData;
+      heroCv.setAttribute('download', prof.cvFileName || 'Hamza-Koybasi-CV.pdf');
+    } else {
+      heroCv.href = 'assets/Hamza-Koybasi-CV.pdf';
+      heroCv.setAttribute('download', 'Hamza-Koybasi-CV.pdf');
+    }
+  }
+
+  /* --- Dynamic Services Render --- */
+  function renderServicesDynamic() {
+    var srvGrid = $('#servicesGrid');
+    if (!srvGrid || !window.PortfolioStore) return;
+    var services = window.PortfolioStore.getServices();
+    if (!services || !services.length) return;
+
+    srvGrid.innerHTML = '';
+    var icons = [
+      '<rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 9h18M7 6.5h.01M9.5 6.5h.01"/>',
+      '<path d="M4 7h16l-1.4 10.2a2 2 0 0 1-2 1.8H7.4a2 2 0 0 1-2-1.8z"/><path d="M9 10V6.5a3 3 0 0 1 6 0V10"/>',
+      '<rect x="7" y="2.5" width="10" height="19" rx="2.6"/><path d="M11 18.6h2"/>',
+      '<path d="m12 3 7 4v10l-7 4-7-4V7z"/><path d="M12 12v9M12 12 5 8M12 12l7-4"/>'
+    ];
+
+    services.forEach(function (srv, i) {
+      var d = (lang === 'en' && srv.en && srv.en.title) ? srv.en : (srv.tr || srv);
+      var iconSvg = icons[i % icons.length];
+      var items = (d.items || []).map(function (it) {
+        return '<li>' + it + '</li>';
+      }).join('');
+
+      var art = document.createElement('article');
+      art.className = 'service reveal is-visible';
+      art.innerHTML =
+        '<span class="service-no">' + (srv.number || ('0' + (i + 1))) + '</span>' +
+        '<div class="service-icon" aria-hidden="true">' +
+          '<svg viewBox="0 0 24 24">' + iconSvg + '</svg>' +
+        '</div>' +
+        '<h3>' + (d.title || '') + '</h3>' +
+        '<p>' + (d.desc || '') + '</p>' +
+        (items ? '<ul class="service-list">' + items + '</ul>' : '');
+
+      srvGrid.appendChild(art);
+    });
+  }
+
+  /* --- Dynamic Skills Render --- */
+  function renderSkillsDynamic() {
+    var skGrid = $('#skillsGrid');
+    if (!skGrid || !window.PortfolioStore) return;
+    var skills = window.PortfolioStore.getSkills();
+    if (!skills || !skills.length) return;
+
+    skGrid.innerHTML = '';
+    var icons = [
+      '<path d="M9 8 5 12l4 4M15 8l4 4-4 4M13.5 5l-3 14"/>',
+      '<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/>',
+      '<path d="m12 3 7 4v10l-7 4-7-4V7z"/><path d="M12 12v9M12 12 5 8M12 12l7-4"/>',
+      '<rect x="3" y="6" width="18" height="12" rx="3"/><circle cx="8.5" cy="12" r="1.6"/><circle cx="15.5" cy="12" r="1.6"/>',
+      '<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>'
+    ];
+
+    skills.forEach(function (cat, i) {
+      var d = (lang === 'en' && cat.en && cat.en.title) ? cat.en : (cat.tr || cat);
+      var iconSvg = icons[i % icons.length];
+      var chips = (cat.chips || []).map(function (c) {
+        return '<li>' + c + '</li>';
+      }).join('');
+
+      var art = document.createElement('article');
+      art.className = 'card skill-card reveal is-visible';
+      art.innerHTML =
+        '<div class="skill-icon" aria-hidden="true">' +
+          '<svg viewBox="0 0 24 24">' + iconSvg + '</svg>' +
+        '</div>' +
+        '<h3>' + (d.title || '') + '</h3>' +
+        (d.desc ? '<p>' + d.desc + '</p>' : '') +
+        (chips ? '<ul class="chips">' + chips + '</ul>' : '');
+
+      skGrid.appendChild(art);
+    });
+  }
+
+  // Initial runs
+  syncCvLink();
+  renderServicesDynamic();
+  renderSkillsDynamic();
+
+  // Listen for real-time changes from Admin Studio
+  if (typeof window !== 'undefined') {
+    window.addEventListener('portfolio:dataChanged', function () {
+      syncCvLink();
+      renderServicesDynamic();
+      renderSkillsDynamic();
+    });
+  }
+
   var filters = $$('.filter');
   var projects = $$('.project');
 
@@ -623,6 +763,7 @@
         f.classList.toggle('is-active', on);
         f.setAttribute('aria-selected', String(on));
       });
+      projects = $$('.project');
       projects.forEach(function (card) {
         var tags = (card.getAttribute('data-tags') || '').split(' ');
         var show = tag === 'all' || tags.indexOf(tag) !== -1;
@@ -633,7 +774,7 @@
   });
 
   /* ---------------------------------------------------------
-     10) Project modal
+     9) Project modal
      --------------------------------------------------------- */
   var modal = $('#projectModal');
   var openId = null;
@@ -693,8 +834,12 @@
     if (lastFocused && lastFocused.focus) lastFocused.focus();
   }
 
-  $$('[data-open]').forEach(function (el) {
-    el.addEventListener('click', function () { openModal(el.getAttribute('data-open')); });
+  /* Delegated open handler */
+  document.addEventListener('click', function (e) {
+    var trigger = e.target.closest('[data-open]');
+    if (trigger) {
+      openModal(trigger.getAttribute('data-open'));
+    }
   });
   if (modal) {
     $$('[data-close]', modal).forEach(function (el) { el.addEventListener('click', closeModal); });
@@ -713,7 +858,7 @@
   });
 
   /* ---------------------------------------------------------
-     11) Contact form → mailto
+     10) Contact form → mailto
      --------------------------------------------------------- */
   var form = $('#contactForm');
   if (form) {
@@ -738,13 +883,24 @@
       var subject = '[' + topic + '] ' + name;
       var body = name + ' (' + email + ')\n\n' + message;
       note.textContent = UI[lang].formSent;
+
+      /* Persist message to PortfolioStore Inbox */
+      if (window.PortfolioStore) {
+        window.PortfolioStore.addMessage({
+          name: name,
+          email: email,
+          topic: topic,
+          message: message
+        });
+      }
+
       window.location.href = 'mailto:hamzakybsi@gmail.com?subject=' +
         encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
     });
   }
 
   /* ---------------------------------------------------------
-     12) Copy e-mail
+     11) Copy e-mail
      --------------------------------------------------------- */
   var copyBtn = $('#copyMail');
   var copyLabelEl = $('#copyMailLabel');
@@ -772,7 +928,7 @@
   }
 
   /* ---------------------------------------------------------
-     13) Pointer effects: spotlight, cursor, magnetic, cards
+     12) Pointer effects: spotlight, cursor, magnetic, cards
      --------------------------------------------------------- */
   var spotlight = $('.spotlight');
 
@@ -824,7 +980,7 @@
   }
 
   /* ---------------------------------------------------------
-     14) Footer year + stored language
+     13) Footer year + stored language
      --------------------------------------------------------- */
   var year = $('#year');
   if (year) year.textContent = String(new Date().getFullYear());
@@ -832,4 +988,14 @@
   var storedLang;
   try { storedLang = localStorage.getItem('hk-lang'); } catch (e) {}
   if (storedLang === 'en') applyLang('en');
+
+  /* ---------------------------------------------------------
+     14) Admin Studio Keyboard Shortcut (Ctrl+Shift+A)
+     --------------------------------------------------------- */
+  document.addEventListener('keydown', function (e) {
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+      e.preventDefault();
+      window.location.href = 'admin/index.html';
+    }
+  });
 })();

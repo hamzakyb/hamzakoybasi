@@ -10,3 +10,15 @@ _tipografi-secenekleri.html
 _tipografi-ust-segment.html
 
 .DS_Store
+
+# Next.js & Dependencies
+node_modules/
+.next/
+out/
+build/
+tsconfig.tsbuildinfo
+next-env.d.ts
+
+# Fontshare in public
+public/assets/fonts/clash-display-*.woff2
+public/assets/fonts/satoshi-*.woff2

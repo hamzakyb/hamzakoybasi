@@ -135,13 +135,6 @@
   <div class="hero-grid" aria-hidden="true"></div>
   <div class="shell hero-inner">
     <div class="hero-copy">
-      <p class="pill reveal">
-        <span class="dot" aria-hidden="true"></span>
-        <span data-i18n="hero.pill">Yeni projeler için müsait</span>
-        <span class="pill-sep" aria-hidden="true">·</span>
-        <span class="pill-time" id="localTime">Nevşehir</span>
-      </p>
-
       <h1 class="hero-title reveal">
         <span class="line" data-i18n="hero.title1">Fikirleri</span>
         <span class="line"><em data-i18n="hero.title2">çalışan</em> <span data-i18n="hero.title3">ürünlere</span></span>
@@ -159,7 +152,7 @@
           <span data-i18n="hero.cta1">Projelerimi gör</span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7"/></svg>
         </a>
-        <a class="btn btn-ghost" href="assets/Hamza-Koybasi-CV.pdf" download>
+        <a class="btn btn-ghost" id="heroCvLink" href="assets/Hamza-Koybasi-CV.pdf" download>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14"/></svg>
           <span data-i18n="hero.cta2">CV'yi indir</span>
         </a>
@@ -321,7 +314,7 @@
       <p class="section-sub" data-i18n="srv.sub">Fikirden yayına, tek elden teslim edilen üç ana iş alanı.</p>
     </header>
 
-    <div class="services">
+    <div class="services" id="servicesGrid">
       <article class="service reveal">
         <span class="service-no">01</span>
         <div class="service-icon" aria-hidden="true">
@@ -376,7 +369,7 @@
       <p class="section-sub" data-i18n="skills.sub">Günlük olarak çalıştığım araçlar ve kütüphaneler.</p>
     </header>
 
-    <div class="skills-grid">
+    <div class="skills-grid" id="skillsGrid">
       <article class="card skill-card reveal">
         <div class="skill-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24"><path d="M9 8 5 12l4 4M15 8l4 4-4 4M13.5 5l-3 14"/></svg>
@@ -887,7 +880,7 @@
       </span>
     </a>
 
-    <p class="footer-copy">© <span id="year">2026</span> Hamza Köybaşı · <span data-i18n="footer.note">Tasarım ve kod bana ait</span></p>
+    <p class="footer-copy">© <span id="year">2026</span> Hamza Köybaşı · <span data-i18n="footer.note">Tasarım ve kod bana ait</span> · <a href="admin/index.html" class="footer-admin-link" style="opacity: 0.45; text-decoration: underline; text-underline-offset: 2px;" title="Admin Studio Girişi (Ctrl+Shift+A)">Admin Studio</a></p>
 
     <a class="to-top" href="#hero" aria-label="Yukarı dön">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
@@ -924,6 +917,7 @@
   </div>
 </div>
 
+<script src="portfolio-store.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
