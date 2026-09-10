@@ -22,6 +22,14 @@ export function setSupabaseAnonKey(key: string): void {
   }
 }
 
+// Node < 22 ortamlarında WebSocket polyfill desteği
+if (typeof window === 'undefined' && typeof globalThis.WebSocket === 'undefined') {
+  try {
+    const ws = require('ws');
+    globalThis.WebSocket = ws;
+  } catch {}
+}
+
 let cachedClient: SupabaseClient | null = null;
 let cachedKey = '';
 
@@ -39,7 +47,10 @@ export function getSupabase(): SupabaseClient | null {
 
   try {
     cachedClient = createClient(url, key, {
-      auth: { persistSession: true, autoRefreshToken: true }
+      auth: { 
+        persistSession: typeof window !== 'undefined', 
+        autoRefreshToken: typeof window !== 'undefined' 
+      }
     });
     cachedKey = key;
     return cachedClient;
