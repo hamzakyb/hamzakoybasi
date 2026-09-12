@@ -148,7 +148,6 @@ export default function HomePage() {
           <nav className="site-nav" aria-label="Ana menü">
             <ul>
               <li><a href="#about">{lang === 'en' ? 'About' : 'Hakkımda'}</a></li>
-              <li><a href="#experience">{lang === 'en' ? 'Experience' : 'Deneyim'}</a></li>
               <li><a href="#services">{lang === 'en' ? 'Services' : 'Hizmetler'}</a></li>
               <li><a href="#skills">{lang === 'en' ? 'Skills' : 'Yetenekler'}</a></li>
               <li><a href="#projects">{lang === 'en' ? 'Projects' : 'Projeler'}</a></li>
@@ -194,7 +193,6 @@ export default function HomePage() {
             <nav>
               <ul>
                 <li><a href="#about" onClick={() => setMobileMenuOpen(false)}>{lang === 'en' ? 'About' : 'Hakkımda'}</a></li>
-                <li><a href="#experience" onClick={() => setMobileMenuOpen(false)}>{lang === 'en' ? 'Experience' : 'Deneyim'}</a></li>
                 <li><a href="#services" onClick={() => setMobileMenuOpen(false)}>{lang === 'en' ? 'Services' : 'Hizmetler'}</a></li>
                 <li><a href="#skills" onClick={() => setMobileMenuOpen(false)}>{lang === 'en' ? 'Skills' : 'Yetenekler'}</a></li>
                 <li><a href="#projects" onClick={() => setMobileMenuOpen(false)}>{lang === 'en' ? 'Projects' : 'Projeler'}</a></li>
@@ -215,7 +213,7 @@ export default function HomePage() {
         <div className="shell hero-shell">
           <div className="hero-content">
             <span className="hero-overline">
-              <span className="mono">00</span> — {lang === 'en' ? 'Full Stack Developer & MIS Vision' : 'Full Stack Developer & YBS Vizyonu'}
+              <span className="mono">00</span> — {lang === 'en' ? 'Full Stack Developer & UI Engineer' : 'Full Stack Developer & UI Engineer'}
             </span>
 
             <h1 className="hero-title">
@@ -226,8 +224,8 @@ export default function HomePage() {
 
             <p className="hero-lead">
               {lang === 'en'
-                ? 'Driven by a Management Information Systems vision: architecting autonomous AI platforms (SaaS/Agents), high-performance B2B portals, and modern web applications with Next.js, Node.js, and cloud ecosystems.'
-                : 'Yönetim Bilişim Sistemleri vizyonuyla; Next.js, Node.js, Python ve güncel yapay zekâ / ajan mimarileriyle iş süreçlerini dijitalleştiren yüksek performanslı platformlar, B2B sistemleri ve otonom çözümler geliştiriyorum.'}
+                ? 'Building high-performance e-commerce portals, B2B platforms, artificial intelligence and augmented reality experiences with modern stacks like Next.js, Node.js and React Native.'
+                : 'Next.js, Node.js, React Native ve güncel teknolojilerle yüksek performanslı e-ticaret portalları, B2B sistemleri, yapay zekâ ve artırılmış gerçeklik deneyimleri geliştiriyorum.'}
             </p>
 
             <div className="hero-actions">
@@ -268,44 +266,43 @@ export default function HomePage() {
         <div className="shell">
           <header className="section-head">
             <span className="section-index">01 — {lang === 'en' ? 'About' : 'Hakkımda'}</span>
-            <h2>{lang === 'en' ? 'Management Information Systems vision, engineered execution' : 'YBS vizyonu, mühendislik disiplini'}</h2>
+            <h2>{lang === 'en' ? 'Product mindset, engineered code' : 'Tasarım duyarlılığı, mühendislik disiplini'}</h2>
             <p className="section-sub">
               {lang === 'en'
-                ? 'From business requirement analysis and process modeling to database design and production deployment.'
-                : 'İş süreçlerinin analizinden veritabanı mimarisine, yönetim panelinden canlıya dağıtıma kadar tüm süreci tek elden yönetiyorum.'}
+                ? 'Managing the entire process from interface and database to deployment.'
+                : 'Arayüz tasarımından veritabanına, yönetim panelinden canlıya dağıtıma kadar tüm süreci tek elden yönetiyorum.'}
             </p>
           </header>
 
           <div className="about-grid">
             <div className="about-text">
               <p className="lead">
-                {lang === 'en'
-                  ? 'Driven by a Management Information Systems perspective, I am a solution-oriented Full Stack Developer who analyzes business processes and digitizes them using modern web and mobile technologies. Alongside React, Node.js, Python, and PostgreSQL, I am proficient in data analytics and process modeling.'
-                  : 'Yönetim Bilişim Sistemleri vizyonuyla hareket eden; iş süreçlerini analiz edip modern web ve mobil teknolojilerle dijitalleştiren çözüm odaklı bir Full Stack Geliştiriciyim. React, Node.js, Python, PostgreSQL gibi teknolojilerin yanı sıra, veri analitiği ve süreç modelleme konularında yetkinim.'}
+                Full stack developer olarak modern web ve mobil uygulamalar geliştiriyorum.
+                React, Next.js, Node.js, Nest.js, React Native, PostgreSQL, MongoDB, Supabase, PHP ve Python
+                gibi güncel teknolojilere hâkimim.
               </p>
               <p>
-                {lang === 'en'
-                  ? 'In my latest flagship project Operairo (AI-powered SaaS hotel concierge platform), I designed operational hotel workflows end-to-end into an autonomous structure, integrating AI directly into business processes via RAG and LLM tool-calling architectures.'
-                  : "Son projem Operairo'da (AI destekli SaaS platformu) sadece teknik mimariyi kurmakla kalmadım; otel operasyon süreçlerini uçtan uca tasarlayarak otonom bir yapıya kavuşturdum. RAG ve LLM tool-calling mimarileriyle yapay zekayı iş süreçlerine entegre ettim."}
+                Yapay zekâ, artırılmış gerçeklik, e-ticaret ve B2B sistemleri gibi birbirinden farklı alanlarda
+                projeler geliştirdim. Bir işin sadece arka planını değil; kullanıcının gördüğü arayüzü,
+                yönetim panelini ve süreci de kurgulamayı seviyorum.
               </p>
               <p>
-                {lang === 'en'
-                  ? 'Across AI, E-Commerce, and B2B projects, I translate operational business demands into functional specs and coordinate technical flows. With a continuous learning mindset, I aim to create tangible value in digital transformation and process improvement.'
-                  : 'Yapay zeka, E-Ticaret ve B2B projelerimde, iş birimlerinin operasyonel taleplerini dinleyerek fonksiyonel gereksinimlere dönüştürme ve teknik akışların koordinasyonunu sağlama konularında tecrübe edindim. Sürekli öğrenmeye açık yapımla, süreç iyileştirme ve dijital dönüşüm hedeflerine değer katmayı amaçlıyorum.'}
+                Hem yazılım geliştirme hem de kullanıcı arayüzü tasarımı konusunda deneyim sahibiyim.
+                Takım çalışmasına uygun, sürekli öğrenen ve çözüm odaklı bir geliştiriciyim.
               </p>
 
               <ul className="about-points">
                 <li>
-                  <strong>{lang === 'en' ? 'End-to-End SaaS & AI' : 'Uçtan Uca SaaS & Yapay Zekâ'}</strong>
-                  <span>{lang === 'en' ? 'RAG, LLM tool-calling, layered APIs, realtime staff feeds and cloud storage.' : 'RAG, LLM tool-calling, katmanlı API, gerçek zamanlı akışlar ve bulut depolama.'}</span>
+                  <strong>Uçtan uca ürün</strong>
+                  <span>Arayüz, API, veritabanı ve yönetim paneli — tek elden teslim.</span>
                 </li>
                 <li>
-                  <strong>{lang === 'en' ? 'Business Analysis & Process Modeling' : 'İş Analizi & Süreç Modelleme'}</strong>
-                  <span>{lang === 'en' ? 'Capturing requirements, designing UAT scenarios, and advanced SQL data modeling.' : 'Müşteri gereksinimleri, test senaryoları/UAT ve ileri düzey SQL veri modelleme.'}</span>
+                  <strong>Yönetilebilir sistemler</strong>
+                  <span>İçeriği ve akışı müşterinin kod yazmadan yönetebildiği sağlam paneller.</span>
                 </li>
                 <li>
-                  <strong>{lang === 'en' ? 'UI Systems & Frontend Engineering' : 'UI Sistemleri & Tasarım Mühendisliği'}</strong>
-                  <span>{lang === 'en' ? 'Modular CMS panels, reusable design tokens and SEO-first high-speed rendering.' : 'Modüler CMS panelleri, yeniden kullanılabilir bileşen sistemleri ve SEO render mimarisi.'}</span>
+                  <strong>Tasarım duyarlılığı</strong>
+                  <span>Ölçülü tipografi, net hiyerarşi ve mobil öncelikli arayüzler.</span>
                 </li>
               </ul>
             </div>
@@ -314,10 +311,10 @@ export default function HomePage() {
               <div className="card info-card">
                 <h3>{lang === 'en' ? 'Currently' : 'Şu anda'}</h3>
                 <ul className="info-list">
-                  <li><span>{lang === 'en' ? 'Location' : 'Konum'}</span><b>{profile.locationTr || 'Nevşehir / Merkez, Türkiye'}</b></li>
+                  <li><span>{lang === 'en' ? 'Location' : 'Konum'}</span><b>{profile.locationTr || 'Nevşehir, Türkiye'}</b></li>
                   <li><span>{lang === 'en' ? 'Availability' : 'Çalışma şekli'}</span><b>{profile.availabilityTr || 'Tam zamanlı / Uzaktan'}</b></li>
-                  <li><span>{lang === 'en' ? 'Focus' : 'Odak'}</span><b>AI (SaaS/Ajanlar) · Next.js · YBS</b></li>
-                  <li><span>{lang === 'en' ? 'Languages' : 'Dil'}</span><b>{profile.languagesTr || 'Türkçe (Ana dil) · İngilizce (B1)'}</b></li>
+                  <li><span>{lang === 'en' ? 'Focus' : 'Odak'}</span><b>Next.js · Node.js · AI</b></li>
+                  <li><span>{lang === 'en' ? 'Languages' : 'Dil'}</span><b>{profile.languagesTr || 'Türkçe · İngilizce (B1)'}</b></li>
                 </ul>
                 <a className="btn btn-ghost btn-block" href="#contact">
                   <span>{lang === 'en' ? 'Get in touch' : 'İletişime geç'}</span>
@@ -326,17 +323,33 @@ export default function HomePage() {
               </div>
 
               <div className="card edu-card">
+                <h3>{lang === 'en' ? 'Experience' : 'İş Deneyimi'}</h3>
+                <ul className="edu-list">
+                  <li>
+                    <span className="edu-year">2026</span>
+                    <b>Deqoin Design Studio</b>
+                    <em>{lang === 'en' ? 'Full Stack Developer · Frontend Engineering' : 'Full Stack Yazılım Geliştirici · UI Tasarım Sistemleri'}</em>
+                  </li>
+                  <li>
+                    <span className="edu-year">2025</span>
+                    <b>Ata Bilgisayar</b>
+                    <em>{lang === 'en' ? 'Full Stack Developer · Modular CMS & Analysis' : 'Full Stack Yazılım Geliştirici · İş Analizi & Modüler CMS'}</em>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="card edu-card">
                 <h3>{lang === 'en' ? 'Education' : 'Eğitim'}</h3>
                 <ul className="edu-list">
                   <li>
                     <span className="edu-year">2021 — 2025</span>
                     <b>İskenderun Teknik Üniversitesi</b>
-                    <em>Yönetim Bilişim Sistemleri (Lisans)</em>
+                    <em>{lang === 'en' ? 'Management Information Systems' : 'Yönetim Bilişim Sistemleri (Lisans)'}</em>
                   </li>
                   <li>
                     <span className="edu-year">2018 — 2021</span>
                     <b>Nevşehir Hacı Bektaş Veli Üniversitesi</b>
-                    <em>Alternatif Enerji Kaynakları Teknolojisi</em>
+                    <em>{lang === 'en' ? 'Alternative Energy Sources Technology' : 'Alternatif Enerji Kaynakları Teknolojisi'}</em>
                   </li>
                 </ul>
               </div>
@@ -345,69 +358,16 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ============ EXPERIENCE ============ */}
-      <section className="section section-alt" id="experience">
-        <div className="shell">
-          <header className="section-head">
-            <span className="section-index">02 — {lang === 'en' ? 'Experience' : 'İş Deneyimi'}</span>
-            <h2>{lang === 'en' ? 'Work Experience & Roles' : 'İş Deneyimi & Kurumsal Roller'}</h2>
-            <p className="section-sub">
-              {lang === 'en'
-                ? 'Frontend engineering, business process modeling and high-impact CMS platforms.'
-                : 'Tasarım mühendisliğinden iş analizine ve modüler CMS mimarilerine uzanan kurumsal roller.'}
-            </p>
-          </header>
-
-          <div className="experience-list">
-            {experiences.map((exp, idx) => {
-              const d = (lang === 'en' && exp.en) ? exp.en : exp.tr;
-              return (
-                <article className="experience-card" key={exp.id || idx}>
-                  <div className="experience-header">
-                    <div className="experience-company-wrap">
-                      <span className="experience-company">{exp.company}</span>
-                      {exp.badge && <span className="experience-badge">{exp.badge}</span>}
-                    </div>
-                    <span className="experience-period">{exp.period}</span>
-                  </div>
-
-                  <div className="experience-role">
-                    {lang === 'en' ? (exp.roleEn || 'Full Stack Developer') : (exp.roleTr || 'Full Stack Yazılım Geliştirici')}
-                  </div>
-
-                  <p className="experience-lead">{d.lead}</p>
-
-                  {d.points && d.points.length > 0 && (
-                    <ul className="experience-points">
-                      {d.points.map((pt, pIdx) => (
-                        <li key={pIdx}>{pt}</li>
-                      ))}
-                    </ul>
-                  )}
-
-                  {d.tech && (
-                    <div className="experience-tech">
-                      <span>{lang === 'en' ? 'Technologies & Scope:' : 'Teknolojiler & Kapsam:'}</span>
-                      <strong>{d.tech}</strong>
-                    </div>
-                  )}
-                </article>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
       {/* ============ SERVICES ============ */}
-      <section className="section" id="services">
+      <section className="section section-alt" id="services">
         <div className="shell">
           <header className="section-head">
-            <span className="section-index">03 — {lang === 'en' ? 'Services' : 'Hizmetler'}</span>
+            <span className="section-index">02 — {lang === 'en' ? 'Services' : 'Hizmetler'}</span>
             <h2>{lang === 'en' ? 'What I deliver' : 'Ne yapıyorum?'}</h2>
             <p className="section-sub">
               {lang === 'en'
-                ? 'End-to-end expertise across AI SaaS, business analysis, modern web and commerce.'
-                : 'Fikirden yayına, tek elden teslim edilen yapay zeka, iş analizi ve web çözümleri.'}
+                ? 'End-to-end expertise across modern web, commerce, mobile and AI.'
+                : 'Fikirden yayına, tek elden teslim edilen uzmanlık ve hizmet alanları.'}
             </p>
           </header>
 
@@ -437,7 +397,7 @@ export default function HomePage() {
       <section className="section" id="skills">
         <div className="shell">
           <header className="section-head">
-            <span className="section-index">04 — {lang === 'en' ? 'Skills' : 'Yetenekler'}</span>
+            <span className="section-index">03 — {lang === 'en' ? 'Skills' : 'Yetenekler'}</span>
             <h2>{lang === 'en' ? 'Technologies & Stack' : 'Kullandığım teknolojiler'}</h2>
             <p className="section-sub">
               {lang === 'en' ? 'Tools, frameworks and libraries in my daily workflow.' : 'Günlük olarak çalıştığım araçlar, kütüphaneler ve altyapılar.'}
@@ -467,22 +427,22 @@ export default function HomePage() {
       <section className="section section-alt" id="projects">
         <div className="shell">
           <header className="section-head">
-            <span className="section-index">05 — {lang === 'en' ? 'Projects' : 'Projeler'}</span>
+            <span className="section-index">04 — {lang === 'en' ? 'Projects' : 'Projeler'}</span>
             <h2>{lang === 'en' ? 'Selected Works' : 'Seçilmiş işler'}</h2>
             <p className="section-sub">
               {lang === 'en'
-                ? 'Production SaaS systems, AI agents, enterprise web portals and mobile experiences.'
-                : 'Canlıda çalışan SaaS platformları, AI ajanları, kurumsal web sistemleri ve mobil deneyimler.'}
+                ? 'Production systems, AI models, mobile and web platforms.'
+                : 'Canlıda çalışan platformlar, yapay zekâ modelleri ve kurumsal web sistemleri.'}
             </p>
           </header>
 
           <div className="filters" role="tablist">
             {[
               { id: 'all', tr: 'Tümü', en: 'All' },
-              { id: 'ai', tr: 'Yapay Zekâ & Ajanlar', en: 'AI & Agents' },
+              { id: 'web', tr: 'Web', en: 'Web' },
               { id: 'ecommerce', tr: 'E-Ticaret & B2B', en: 'E-Commerce & B2B' },
-              { id: 'web', tr: 'Web & CMS', en: 'Web & CMS' },
-              { id: 'ar', tr: 'AR & Mobil', en: 'AR & Mobile' },
+              { id: 'ai', tr: 'Yapay Zekâ', en: 'AI' },
+              { id: 'ar', tr: 'AR / Mobil', en: 'AR / Mobile' },
               { id: 'web3', tr: 'Web3', en: 'Web3' }
             ].map(tab => (
               <button
@@ -555,20 +515,6 @@ export default function HomePage() {
                       {(proj.chips || []).map((chip, idx) => <li key={idx}>{chip}</li>)}
                     </ul>
 
-                    {proj.credentials && (
-                      <div className="project-creds-preview">
-                        <span className="project-creds-title">
-                          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                          <span>{lang === 'en' ? 'Demo Access' : 'Demo Erişimi'}</span>
-                        </span>
-                        <div className="project-creds-info">
-                          {proj.credentials.username && <span>{lang === 'en' ? 'User:' : 'Kullanıcı:'} <code>{proj.credentials.username}</code></span>}
-                          {proj.credentials.password && <span>{lang === 'en' ? 'Pass:' : 'Şifre:'} <code>{proj.credentials.password}</code></span>}
-                          {proj.credentials.pin && <span>PIN: <code>{proj.credentials.pin}</code></span>}
-                        </div>
-                      </div>
-                    )}
-
                     <div className="project-links">
                       <button
                         className="link-btn"
@@ -598,7 +544,7 @@ export default function HomePage() {
       <section className="section" id="contact">
         <div className="shell">
           <header className="section-head">
-            <span className="section-index">06 — {lang === 'en' ? 'Contact' : 'İletişim'}</span>
+            <span className="section-index">05 — {lang === 'en' ? 'Contact' : 'İletişim'}</span>
             <h2>{lang === 'en' ? 'Let’s work together' : 'Birlikte çalışalım'}</h2>
             <p className="section-sub">
               {lang === 'en'
@@ -789,12 +735,12 @@ export default function HomePage() {
             </ul>
 
             {selectedProject.credentials && (
-              <div className="project-creds-preview" style={{ margin: '20px 0', padding: '14px 18px', background: 'var(--bg-alt)', borderRadius: 10 }}>
-                <div className="project-creds-title" style={{ marginBottom: 8, color: 'var(--accent)' }}>
+              <div className="project-creds-preview">
+                <div className="project-creds-title">
                   <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                   <span>{lang === 'en' ? 'Demo Access Credentials' : 'Demo Giriş Bilgileri'}</span>
                 </div>
-                <div className="project-creds-info" style={{ display: 'grid', gap: 6, fontSize: 13 }}>
+                <div className="project-creds-info">
                   {selectedProject.credentials.username && (
                     <div><span>{lang === 'en' ? 'Username / Email:' : 'Kullanıcı Adı / E-posta:'}</span> <code>{selectedProject.credentials.username}</code></div>
                   )}
