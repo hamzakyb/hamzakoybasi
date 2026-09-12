@@ -32,6 +32,13 @@ export interface Project {
     en: string;
     href: string;
   }[];
+  credentials?: {
+    username?: string;
+    password?: string;
+    pin?: string;
+    noteTr?: string;
+    noteEn?: string;
+  };
 }
 
 export interface ServiceItem {
@@ -113,12 +120,32 @@ export interface SecurityConfig {
   passwordChangedAt?: string;
 }
 
+export interface ExperienceItem {
+  id: string;
+  period: string;
+  company: string;
+  roleTr: string;
+  roleEn: string;
+  badge?: string;
+  tr: {
+    lead: string;
+    points: string[];
+    tech: string;
+  };
+  en?: {
+    lead: string;
+    points: string[];
+    tech: string;
+  };
+}
+
 export interface PortfolioData {
   projects: Project[];
   services: ServiceItem[];
   skills: SkillCategory[];
   profile: Profile;
   inbox: InboxMessage[];
+  experiences?: ExperienceItem[];
   security?: SecurityConfig;
   seo?: SeoConfig;
 }

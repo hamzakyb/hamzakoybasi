@@ -68,7 +68,8 @@ export const portfolioStore = {
           services: parsed.services || INITIAL_DATA.services,
           skills: parsed.skills || INITIAL_DATA.skills,
           profile: { ...DEFAULT_PROFILE, ...(parsed.profile || {}) },
-          inbox: parsed.inbox || INITIAL_DATA.inbox
+          inbox: parsed.inbox || INITIAL_DATA.inbox,
+          experiences: parsed.experiences || INITIAL_DATA.experiences
         };
       }
     } catch (e) {
