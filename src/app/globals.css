@@ -229,6 +229,20 @@ body.cursor-active .cursor-ring {
   height: 1.5px; background: var(--accent); border-radius: 2px;
 }
 
+.status-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 13px; border-radius: 999px;
+  background: var(--panel); border: 1px solid var(--line);
+  font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-soft);
+  white-space: nowrap;
+}
+.status-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #10B981;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+  animation: pulse 2s infinite;
+}
+
 .header-actions { display: flex; align-items: center; gap: 8px; }
 
 .icon-btn {
@@ -304,6 +318,22 @@ body.cursor-active .cursor-ring {
    HERO
    ========================================================= */
 .hero { position: relative; z-index: 2; padding: 150px 0 0; overflow: hidden; }
+
+.hero-bg-mark {
+  position: absolute;
+  right: -60px;
+  top: 40px;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.035;
+  user-select: none;
+}
+.hero-bg-mark img {
+  width: clamp(320px, 45vw, 560px);
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
 
 .hero-grid {
   position: absolute; inset: 0; z-index: -1; pointer-events: none;
@@ -773,7 +803,8 @@ body.cursor-active .cursor-ring {
 .site-footer { position: relative; z-index: 2; border-top: 1px solid var(--line); padding: 30px 0; }
 .footer-inner { display: flex; align-items: center; gap: 20px; }
 .footer-brand { display: flex; align-items: center; gap: 12px; }
-.footer-brand .logo-mark { width: 34px; height: 34px; }
+.footer-brand .logo-mark, .footer-brand .brand-mark { width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; }
+.footer-brand .brand-mark img { width: 100%; height: 100%; object-fit: contain; }
 .footer-brand span { display: flex; flex-direction: column; line-height: 1.2; }
 .footer-brand strong {
   font-family: var(--font-display); font-size: 15px; font-weight: 600; color: var(--ink);
@@ -906,7 +937,7 @@ body.cursor-active .cursor-ring {
 }
 
 @media (max-width: 900px) {
-  .nav, .header-cta { display: none; }
+  .nav, .header-cta, .status-pill { display: none; }
   .menu-btn { display: flex; }
   .hero { padding-top: 118px; }
   .section { padding: 84px 0; }

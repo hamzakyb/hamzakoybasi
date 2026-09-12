@@ -13,6 +13,7 @@ export default function HomePage() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
+  const [isStuck, setIsStuck] = useState(false);
 
   // Form state
   const [formName, setFormName] = useState('');
@@ -21,6 +22,14 @@ export default function HomePage() {
   const [formMessage, setFormMessage] = useState('');
   const [formSubmitting, setFormSubmitting] = useState(false);
   const [formSuccess, setFormSuccess] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsStuck(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     // Load persisted store data on client
@@ -128,7 +137,7 @@ export default function HomePage() {
   return (
     <>
       {/* ============ HEADER ============ */}
-      <header className="site-header" id="top">
+      <header className={`site-header ${isStuck ? 'is-stuck' : ''}`} id="top">
         <div className="shell header-inner">
           <Link className="brand" href="#top" aria-label="Hamza Köybaşı — Ana sayfa">
             <span className="brand-mark">
@@ -145,14 +154,12 @@ export default function HomePage() {
             <span>{lang === 'en' ? 'Open to new projects' : 'Yeni projelere açık'}</span>
           </div>
 
-          <nav className="site-nav" aria-label="Ana menü">
-            <ul>
-              <li><a href="#about">{lang === 'en' ? 'About' : 'Hakkımda'}</a></li>
-              <li><a href="#services">{lang === 'en' ? 'Services' : 'Hizmetler'}</a></li>
-              <li><a href="#skills">{lang === 'en' ? 'Skills' : 'Yetenekler'}</a></li>
-              <li><a href="#projects">{lang === 'en' ? 'Projects' : 'Projeler'}</a></li>
-              <li><a href="#contact">{lang === 'en' ? 'Contact' : 'İletişim'}</a></li>
-            </ul>
+          <nav className="nav" aria-label="Ana menü">
+            <a href="#about">{lang === 'en' ? 'About' : 'Hakkımda'}</a>
+            <a href="#services">{lang === 'en' ? 'Services' : 'Hizmetler'}</a>
+            <a href="#skills">{lang === 'en' ? 'Skills' : 'Yetenekler'}</a>
+            <a href="#projects">{lang === 'en' ? 'Projects' : 'Projeler'}</a>
+            <a href="#contact">{lang === 'en' ? 'Contact' : 'İletişim'}</a>
           </nav>
 
           <div className="header-actions">
@@ -165,16 +172,16 @@ export default function HomePage() {
             </Link>
 
             <button
-              className="lang-toggle"
+              className="icon-btn lang-btn"
               type="button"
               onClick={() => setLang(lang === 'tr' ? 'en' : 'tr')}
               aria-label="Dili değiştir"
             >
-              <span className="lang-code">{lang === 'tr' ? 'EN' : 'TR'}</span>
+              <span>{lang === 'tr' ? 'EN' : 'TR'}</span>
             </button>
 
             <button
-              className={`menu-toggle ${mobileMenuOpen ? 'is-open' : ''}`}
+              className={`icon-btn menu-btn ${mobileMenuOpen ? 'is-open' : ''}`}
               type="button"
               aria-label="Menü"
               aria-expanded={mobileMenuOpen}
@@ -188,18 +195,36 @@ export default function HomePage() {
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="mobile-menu-overlay" onClick={() => setMobileMenuOpen(false)}>
-          <div className="mobile-menu-drawer" onClick={e => e.stopPropagation()}>
-            <nav>
-              <ul>
-                <li><a href="#about" onClick={() => setMobileMenuOpen(false)}>{lang === 'en' ? 'About' : 'Hakkımda'}</a></li>
-                <li><a href="#services" onClick={() => setMobileMenuOpen(false)}>{lang === 'en' ? 'Services' : 'Hizmetler'}</a></li>
-                <li><a href="#skills" onClick={() => setMobileMenuOpen(false)}>{lang === 'en' ? 'Skills' : 'Yetenekler'}</a></li>
-                <li><a href="#projects" onClick={() => setMobileMenuOpen(false)}>{lang === 'en' ? 'Projects' : 'Projeler'}</a></li>
-                <li><a href="#contact" onClick={() => setMobileMenuOpen(false)}>{lang === 'en' ? 'Contact' : 'İletişim'}</a></li>
-                <li><Link href="/admin" onClick={() => setMobileMenuOpen(false)}>Admin Studio</Link></li>
-              </ul>
-            </nav>
+        <div className="mobile-menu" role="dialog" aria-modal="true">
+          <nav>
+            <a href="#about" onClick={() => setMobileMenuOpen(false)}>
+              <i>01</i>
+              <span>{lang === 'en' ? 'About' : 'Hakkımda'}</span>
+            </a>
+            <a href="#services" onClick={() => setMobileMenuOpen(false)}>
+              <i>02</i>
+              <span>{lang === 'en' ? 'Services' : 'Hizmetler'}</span>
+            </a>
+            <a href="#skills" onClick={() => setMobileMenuOpen(false)}>
+              <i>03</i>
+              <span>{lang === 'en' ? 'Skills' : 'Yetenekler'}</span>
+            </a>
+            <a href="#projects" onClick={() => setMobileMenuOpen(false)}>
+              <i>04</i>
+              <span>{lang === 'en' ? 'Projects' : 'Projeler'}</span>
+            </a>
+            <a href="#contact" onClick={() => setMobileMenuOpen(false)}>
+              <i>05</i>
+              <span>{lang === 'en' ? 'Contact' : 'İletişim'}</span>
+            </a>
+            <Link href="/admin" onClick={() => setMobileMenuOpen(false)}>
+              <i>06</i>
+              <span>Admin Studio</span>
+            </Link>
+          </nav>
+          <div className="mobile-menu-foot">
+            <span>Hamza Köybaşı — Full Stack Developer</span>
+            <span>{profile.email || 'hamzakybsi@gmail.com'}</span>
           </div>
         </div>
       )}
@@ -685,15 +710,19 @@ export default function HomePage() {
             <span className="brand-mark">
               <img src="/assets/logo-icon.png" alt="Hamza Köybaşı" width="32" height="32" />
             </span>
-            <span>Hamza Köybaşı &copy; {new Date().getFullYear()}</span>
+            <span>
+              <strong>Hamza Köybaşı</strong>
+              <small>Full Stack Developer</small>
+            </span>
           </div>
 
-          <div className="footer-links">
-            <a href="#top">
-              <span>{lang === 'en' ? 'Back to top' : 'Başa dön'}</span>
-              <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="18 15 12 9 6 15"/></svg>
-            </a>
+          <div className="footer-copy">
+            &copy; {new Date().getFullYear()} Hamza Köybaşı. {lang === 'en' ? 'All rights reserved.' : 'Tüm hakları saklıdır.'}
           </div>
+
+          <a className="to-top" href="#top" aria-label={lang === 'en' ? 'Back to top' : 'Başa dön'}>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="18 15 12 9 6 15"/></svg>
+          </a>
         </div>
       </footer>
 
