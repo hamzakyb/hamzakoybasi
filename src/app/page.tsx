@@ -466,7 +466,7 @@ export default function HomePage() {
               return (
                 <article
                   key={proj.id}
-                  className={`project is-visible ${proj.featured ? 'featured' : ''}`}
+                  className="project is-visible"
                   data-id={proj.id}
                 >
                   <button
