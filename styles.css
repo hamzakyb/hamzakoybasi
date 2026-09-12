@@ -598,9 +598,12 @@ body.cursor-active .cursor-ring {
 .project:hover { transform: translateY(-6px); border-color: var(--line-2); box-shadow: var(--shadow); }
 .project.is-hidden { display: none; }
 
-.project.featured { grid-column: span 2; }
-.project.featured .project-media { aspect-ratio: 16 / 8; }
-.project.featured h3 { font-size: 1.6rem; }
+.project.featured {
+  /* Standart kart boyutlarıyla eşit hizada tutulur */
+}
+.project.featured h3 {
+  /* Standart başlık boyutu */
+}
 
 .project-media {
   position: relative; display: block; width: 100%;
@@ -842,9 +845,6 @@ body.cursor-active .cursor-ring {
   .hero-logo { display: none; }
   .about-grid { grid-template-columns: minmax(0, 1fr); gap: 34px; }
   .contact-grid { grid-template-columns: minmax(0, 1fr); gap: 34px; }
-  .project.featured { grid-column: span 1; }
-  .project.featured .project-media { aspect-ratio: 16 / 9.6; }
-  .project.featured h3 { font-size: 1.3rem; }
   .process li::after { display: none; }
 }
 
