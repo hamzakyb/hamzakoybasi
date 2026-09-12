@@ -699,7 +699,12 @@ export default function AdminPage() {
                 {data.projects.map(proj => (
                   <div className="card-panel" key={proj.id}>
                     <div className="card-panel-head">
-                      <h3>{proj.order}. {proj.tr.title}</h3>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <span className={`project-card-monogram ${!proj.media?.startsWith('http') && !proj.media?.startsWith('data:') && !proj.media?.startsWith('/') ? (proj.media || 'm1') : ''}`} style={{ color: '#fff', fontWeight: 700, borderRadius: 8, width: 34, height: 34, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 13 }}>
+                          {proj.mark || 'HK'}
+                        </span>
+                        <h3>{proj.order}. {proj.tr.title}</h3>
+                      </div>
                       <div className="card-panel-actions">
                         <button
                           className="btn btn-secondary btn-sm"
