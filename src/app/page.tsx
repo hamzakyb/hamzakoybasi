@@ -149,28 +149,14 @@ export default function HomePage() {
             </span>
           </Link>
 
-          <div className="status-pill" aria-label="Çalışma durumu">
-            <span className="status-dot"></span>
-            <span>{lang === 'en' ? 'Open to new projects' : 'Yeni projelere açık'}</span>
-          </div>
-
           <nav className="nav" aria-label="Ana menü">
             <a href="#about">{lang === 'en' ? 'About' : 'Hakkımda'}</a>
             <a href="#services">{lang === 'en' ? 'Services' : 'Hizmetler'}</a>
             <a href="#skills">{lang === 'en' ? 'Skills' : 'Yetenekler'}</a>
             <a href="#projects">{lang === 'en' ? 'Projects' : 'Projeler'}</a>
-            <a href="#contact">{lang === 'en' ? 'Contact' : 'İletişim'}</a>
           </nav>
 
           <div className="header-actions">
-            <Link className="btn btn-ghost btn-sm" href="/admin" title="Admin Studio">
-              <svg viewBox="0 0 24 24" style={{ width: 15, height: 15 }}>
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-              </svg>
-              <span>Admin</span>
-            </Link>
-
             <button
               className="icon-btn lang-btn"
               type="button"
